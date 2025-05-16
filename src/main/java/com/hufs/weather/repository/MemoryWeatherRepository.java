@@ -24,11 +24,3 @@ public class MemoryWeatherRepository implements  WeatherRepository {
         return new ArrayList<>(store.values());
     }
 }
-
-
-        
-
-
-
-
-}
