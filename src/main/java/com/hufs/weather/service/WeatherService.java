@@ -71,7 +71,7 @@ public class WeatherService {
     public List<Weather> nextWeekWeather() {
         List<Weather> weather = fetchWeatherFromAPI(14);
 
-        List<Weather> nextWeek = weather.sublist(7,14);
+        List<Weather> nextWeek = weather.subList(7,14);
 
         return nextWeek;
     }
