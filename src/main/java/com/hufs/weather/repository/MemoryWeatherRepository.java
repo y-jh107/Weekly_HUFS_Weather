@@ -1,9 +1,11 @@
 package com.hufs.weather.repository;
 
 import com.hufs.weather.domain.Weather;
+import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
+@Repository
 public class MemoryWeatherRepository implements  WeatherRepository {
 
     private static Map<String, Weather> store = new HashMap<>();
