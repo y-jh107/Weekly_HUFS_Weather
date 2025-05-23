@@ -1,0 +1,2 @@
+We are creating site that provides weather information of HUFS and near location.
+I'm working on the basic code of showing weather and the site's design, and I'm using html,css code to make these things work based on https://whyhard.tistory.com/20
