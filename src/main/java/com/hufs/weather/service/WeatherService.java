@@ -64,7 +64,15 @@ public class WeatherService {
         return weatherList;
     }
 
-    public List<Weather> thisWeekWeather() {
-        return fetchWeatherFromAPI(7);
+    public List<Weather> thisWeekWeather(){
+        return fetchWeatherFromAPI((7));
+    }
+
+    public List<Weather> nextWeekWeather() {
+        List<Weather> weather = fetchWeatherFromAPI(14);
+
+        List<Weather> nextWeek = weather.sublist(7,14);
+
+        return nextWeek;
     }
 }

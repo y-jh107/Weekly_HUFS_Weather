@@ -24,7 +24,12 @@ public class WeatherController {
         return weatherService.thisWeekWeather();
     }
 
-//    @GetMapping("/weather/last-week")
-//    public List<WeatherResponse> getLastWeekWeather(WeatherService weatherService) {
-//    }
+    @GetMapping("/next-week")
+    @ResponseBody
+    public List<Weather> getLastWeekWeather(){
+        return weatherService.nextWeekWeather();
+    }
 }
+
+
+
