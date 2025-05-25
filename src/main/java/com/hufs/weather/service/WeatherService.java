@@ -25,9 +25,12 @@ public class WeatherService {
         this.weatherRepository = weatherRepository;
     }
 
-    public List<Weather> fetchWeatherFromAPI(String city) {
-        String url = "https://api.openweathermap.org/data/2.5/daily?lat=" + lat +
-                "&lon=" + lon + "&cnt=7" + "&appid=" + apiKey + "&units=metric";
+    public List<Weather> fetchWeatherFromAPI(int days) {
+        String url = "https://api.openweathermap.org/data/2.5/forecast/daily?lat=" + lat +
+                "&lon=" + lon +
+                "&cnt=" + days +
+                "&appid=" + apiKey +
+                "&units=metric";
 
         RestTemplate restTemplate = new RestTemplate();
         String response = restTemplate.getForObject(url, String.class);
@@ -59,5 +62,17 @@ public class WeatherService {
         }
 
         return weatherList;
+    }
+
+    public List<Weather> thisWeekWeather(){
+        return fetchWeatherFromAPI((7));
+    }
+
+    public List<Weather> nextWeekWeather() {
+        List<Weather> weather = fetchWeatherFromAPI(14);
+
+        List<Weather> nextWeek = weather.subList(7,14);
+
+        return nextWeek;
     }
 }
