@@ -36,7 +36,7 @@ public class SeasonQuoteService {
                 "If we had no winter, the spring would not be so pleasant.",
                 "To appreciate the beauty of a snowflake, it is necessary to stand out in the cold.",
                 "Winter is not a season, it’s a celebration.",
-                "Kindness is like snow – it beautifies everything it covers."
+                "Kindness is like snow – it beautifies everything it covers.",
                 "If winter comes, can spring be far behind?",
                 "If we had no winter, the spring would not be so pleasant: if we did not taste of adversity, prosperity would not be so welcome."
         ));
