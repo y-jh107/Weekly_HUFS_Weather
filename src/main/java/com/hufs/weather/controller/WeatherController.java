@@ -13,17 +13,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 import java.time.LocalDate;
 
-
-
-
-
 @Controller
 @RequestMapping("/weather")
 public class WeatherController {
     private final WeatherService weatherService;
+    private final SeasonQuoteService seasonQuoteService;
 
-    public WeatherController(WeatherService weatherService) {
+    public WeatherController(WeatherService weatherService, SeasonQuoteService seasonQuoteService) {
         this.weatherService = weatherService;
+        this.seasonQuoteService = seasonQuoteService;
     }
 
     @GetMapping("/this-week")
@@ -38,17 +36,11 @@ public class WeatherController {
         return weatherService.nextWeekWeather();
     }
 
-    private final SeasonQuoteService seasonQuoteService;
-
-    public WeatherController(WeatherService weatherService, SeasonQuoteService seasonQuoteService) {
-        this.weatherService = weatherService;
-        this.seasonQuoteService = seasonQuoteService;
-    }
-
-    @GetMapping("/quote")
+    @GetMapping("")
     @ResponseBody
-    public String getSeasonQuote(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        return seasonQuoteService.getQuoteByDate(date);
+    public String getSeasonQuote() {
+        LocalDate today = LocalDate.now();
+        return seasonQuoteService.getQuoteByDate(today);
     }
 
 }
