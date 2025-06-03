@@ -14,11 +14,29 @@
       align-items: center;
       justify-content: flex-start;
       padding: 20px;
+      position: relative;
     }
+
     h1 {
       text-align: center;
       cursor: pointer;
     }
+
+    .center-box {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 40px 50px;
+      margin-top: 40px;
+      text-align: center;
+      width: 100%;              
+      max-width: 1800px;        
+      height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
     .weather-container {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -27,6 +45,7 @@
       width: 100%;
       max-width: 1000px;
     }
+
     .day-card {
       background: white;
       padding: 16px;
@@ -38,24 +57,29 @@
       flex-direction: column;
       justify-content: flex-start;
     }
+
     .date {
       font-weight: bold;
       font-size: 1.1em;
       margin-bottom: 16px;
     }
+
     .weather {
       font-size: 1.1em;
       color: #555;
       margin-bottom: 10px;
     }
+
     .temp {
       margin: 6px 0;
     }
+
     .week-toggle {
       position: absolute;
       bottom: 30px;
       text-align: center;
     }
+
     .week-toggle button {
       margin: 0 5px;
       padding: 8px 16px;
@@ -66,6 +90,7 @@
       color: white;
       cursor: pointer;
     }
+
     .week-toggle button:hover {
       background-color: #3399ff;
     }
@@ -73,10 +98,16 @@
 </head>
 <body>
   <h1 onclick="resetView()">Weekly HUFS Weather</h1>
+
+  <div class="center-box" id="centerBox">
+    <p>여기에 메인 정보를 표시할 수 있습니다.</p>
+  </div>
+
   <div class="weather-container" id="weatherContainer"></div>
+
   <div class="week-toggle">
-    <button onclick="showWeek(0)">이번 주</button>
-    <button onclick="showWeek(1)">다음 주</button>
+    <button onclick="goToThisWeek()">이번 주</button>
+    <button onclick="goToNextWeek()">다음 주</button>
   </div>
 
   <script>
@@ -84,7 +115,7 @@
 
     async function fetchWeatherData() {
       try {
-        const response = await fetch('/api/weather'); // 제목에 맞는 api 이름 변경 필요
+        const response = await fetch('/api/weather'); // 실제 데이터들 백엔드 작업 필요함다
         const data = await response.json();
         allWeatherData = data;
         showWeek(0);
@@ -105,7 +136,10 @@
 
     function showWeek(weekIndex) {
       const container = document.getElementById('weatherContainer');
+      const centerBox = document.getElementById('centerBox');
       container.innerHTML = '';
+      centerBox.style.display = 'none';
+
       const start = weekIndex * 7;
       const end = start + 7;
       const weekData = allWeatherData.slice(start, end);
@@ -125,7 +159,16 @@
     }
 
     function resetView() {
-      showWeek(0);
+      document.getElementById('centerBox').style.display = 'flex';
+      document.getElementById('weatherContainer').innerHTML = '';
+    }
+
+    function goToThisWeek() {
+      window.location.href = '/weather/this-week';
+    }
+
+    function goToNextWeek() {
+      window.location.href = '/weather/next-week';
     }
 
     fetchWeatherData();
