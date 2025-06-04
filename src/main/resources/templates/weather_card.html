@@ -27,7 +27,7 @@
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       padding: 40px 50px;
-      margin-top: 40px;
+      margin-top: 80px;
       text-align: center;
       width: 100%;              
       max-width: 1800px;        
@@ -38,8 +38,9 @@
     }
 
     .weather-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      display: flex;
+      flex-wrap: nowrap;
+      overflow-x: auto;
       gap: 20px;
       margin-top: 20px;
       width: 100%;
@@ -115,7 +116,7 @@
 
     async function fetchWeatherData() {
       try {
-        const response = await fetch('/api/weather'); // 실제 데이터들 백엔드 작업 필요함다
+        const response = await fetch('/api/weather'); 
         const data = await response.json();
         allWeatherData = data;
         showWeek(0);
@@ -124,13 +125,13 @@
       }
     }
 
-    function getWeatherIcon(weather) {
-      switch (weather) {
-        case '맑음': return '☀️';
-        case '흐림': return '☁️';
-        case '비':   return '🌧️';
-        case '눈':   return '❄️';
-        default:     return '';
+    function getWeatherIcon(cond) {
+      switch (cond) {
+        case 'Clear': return '☀️';
+        case 'Clouds': return '☁️';
+        case 'Rain': return '🌧️';
+        case 'Snow': return '❄️';
+        default: return '';
       }
     }
 
@@ -147,13 +148,14 @@
       weekData.forEach(day => {
         const card = document.createElement('div');
         card.className = 'day-card';
-        const icon = getWeatherIcon(day.weather);
+        const icon = getWeatherIcon(day.cond);
         card.innerHTML = `
           <div class="date">${new Date(day.date).toLocaleDateString('ko-KR', { weekday: 'short', month: 'short', day: 'numeric' })}</div>
-          <div class="weather">${icon} ${day.weather}</div>
-          <div class="temp">최고: ${day.tempMax}℃</div>
-          <div class="temp">최저: ${day.tempMin}℃</div>
-        `;
+          <div class="weather">${icon} ${day.cond}</div>
+          <div class="temp">최고: ${day.maxTemp.toFixed(1)}℃</div>
+          <div class="temp">최저: ${day.minTemp.toFixed(1)}℃</div>
+`        ;
+
         container.appendChild(card);
       });
     }
