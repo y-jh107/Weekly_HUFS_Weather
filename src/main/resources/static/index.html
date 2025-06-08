@@ -42,6 +42,13 @@
       justify-content: center;
     }
 
+    .center-box p {
+      font-family: 'Georgia', 'Garamond', serif;
+      font-size: 1.6em;
+      line-height: 1.6;
+      color: #333;
+    }
+
     .weather-container {
       display: flex;
       flex-wrap: nowrap;
@@ -68,21 +75,9 @@
       justify-content: flex-start;
       box-sizing: border-box;
       position: relative;
-      overflow: hidden;
-    }
-
-    .day-card::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 100px;
-      background-size: contain;
       background-repeat: no-repeat;
       background-position: center bottom;
-      opacity: 0.25;
-      pointer-events: none;
+      background-size: contain;
     }
 
     .date {
@@ -121,12 +116,6 @@
     .week-toggle button:hover {
       background-color: #3399ff;
     }
-    .center-box p {
-    font-family: 'Georgia', 'Garamond', serif;
-    font-size: 1.6em;
-    line-height: 1.6;
-    color: #333;
-    }
   </style>
 </head>
 <body>
@@ -146,41 +135,58 @@
 <script>
   let allWeatherData = [];
 
-  async function fetchWeatherData() {
-    try {
-      const thisWeek = await fetch('/weather/this-week');
-      const nextWeek = await fetch('/weather/next-week');
-      const thisWeekData = await thisWeek.json();
-      const nextWeekData = await nextWeek.json();
-      allWeatherData = [...thisWeekData, ...nextWeekData];
-    } catch (error) {
-      console.error('날씨 데이터를 가져오는데 실패했습니다:', error);
-    }
-  }
-
-  async function fetchSeasonQuote() {
-    try {
-      const response = await fetch('/weather');
-      const quote = await response.text();
-      document.getElementById('centerBox').innerHTML = `<p>${quote}</p>`;
-    } catch (error) {
-      console.error('명언을 불러오는 데 실패했습니다:', error);
+  function getWeatherIcon(cond) {
+    switch (cond) {
+      case 'Clear': return '☀️';
+      case 'Clouds': return '☁️';
+      case 'Rain': return '🌧️';
+      case 'Snow': return '❄️';
+      default: return '';
     }
   }
 
   function getWeatherImage(cond) {
     switch (cond) {
       case 'Clear':
-        return 'https://cdn-icons-png.flaticon.com/512/869/869869.png'; 
+        return 'https://cdn-icons-png.flaticon.com/512/869/869869.png';
       case 'Clouds':
-        return 'https://cdn-icons-png.flaticon.com/512/1163/1163624.png'; 
+        return 'https://cdn-icons-png.flaticon.com/512/1163/1163624.png';
       case 'Rain':
-        return 'https://cdn-icons-png.flaticon.com/512/1163/1163657.png'; 
+        return 'https://cdn-icons-png.flaticon.com/512/1163/1163657.png';
       case 'Snow':
-        return 'https://cdn-icons-png.flaticon.com/512/1163/1163634.png'; 
+        return 'https://cdn-icons-png.flaticon.com/512/1163/1163634.png';
       default:
         return '';
-     }
+    }
+  }
+
+  async function fetchWeatherData() {
+    try {
+      const res = await fetch('/api/weather');
+      if (!res.ok) throw new Error('날씨 데이터를 불러오지 못했습니다.');
+      allWeatherData = await res.json();
+
+      if (location.pathname === '/weather/next-week') {
+        showWeek(1);
+      } else if (location.pathname === '/weather/this-week') {
+        showWeek(0);
+      }
+    } catch (err) {
+      console.error(err);
+      document.getElementById('weatherContainer').innerHTML = `<p>날씨 데이터를 불러오지 못했습니다.</p>`;
+    }
+  }
+
+  async function fetchSeasonQuote() {
+    try {
+      const res = await fetch('/api/season-quote');
+      if (!res.ok) throw new Error('명언 데이터를 불러오지 못했습니다.');
+      const data = await res.json();
+      document.getElementById('centerBox').innerHTML = `<p>${data.quote}</p>`;
+    } catch (err) {
+      console.error(err);
+      document.getElementById('centerBox').innerHTML = `<p>명언을 불러오지 못했습니다.</p>`;
+    }
   }
 
   function showWeek(weekIndex) {
@@ -188,31 +194,34 @@
     const centerBox = document.getElementById('centerBox');
     container.innerHTML = '';
     centerBox.style.display = 'none';
+
     const start = weekIndex * 7;
     const end = start + 7;
     const weekData = allWeatherData.slice(start, end);
 
-  weekData.forEach(day => {
-    const card = document.createElement('div');
-    card.className = 'day-card';
-    const icon = getWeatherIcon(day.cond);
-    const bgImage = getWeatherImage(day.cond);
-    card.style.setProperty('--bg-img', `url('${bgImage}')`);
-    card.innerHTML = `
-      <div class="date">${new Date(day.date).toLocaleDateString('ko-KR', { weekday: 'short', month: 'short', day: 'numeric' })}</div>
-      <div class="weather">${icon} ${day.cond}</div>
-      <div class="temp">최고: ${day.maxTemp.toFixed(1)}℃</div>
-      <div class="temp">최저: ${day.minTemp.toFixed(1)}℃</div>
-    `;
-    card.style.setProperty('--bg-img', `url('${bgImage}')`);
-    card.style.setProperty('--cond', day.cond);
-    card.style.backgroundImage = `linear-gradient(to top, rgba(255,255,255,0.95) 70%, transparent), url('${bgImage}')`;
-    card.style.backgroundPosition = 'center bottom';
-    card.style.backgroundRepeat = 'no-repeat';
-    card.style.backgroundSize = 'contain';
-    container.appendChild(card);
+    weekData.forEach(day => {
+      const card = document.createElement('div');
+      card.className = 'day-card';
+
+      const icon = getWeatherIcon(day.cond);
+      const bgImage = getWeatherImage(day.cond);
+
+      card.style.backgroundImage = `linear-gradient(to top, rgba(255,255,255,0.95) 70%, transparent), url('${bgImage}')`;
+
+      card.innerHTML = `
+        <div class="date">${new Date(day.date).toLocaleDateString('ko-KR', {
+          weekday: 'short',
+          month: 'short',
+          day: 'numeric'
+        })}</div>
+        <div class="weather">${icon} ${day.cond}</div>
+        <div class="temp">최고: ${day.maxTemp.toFixed(1)}℃</div>
+        <div class="temp">최저: ${day.minTemp.toFixed(1)}℃</div>
+      `;
+
+      container.appendChild(card);
     });
-  } 
+  }
 
   function resetView() {
     history.pushState({}, '', '/');
@@ -244,4 +253,4 @@
   fetchSeasonQuote();
 </script>
 </body>
-</html> 
+</html>
