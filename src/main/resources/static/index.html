@@ -67,6 +67,22 @@
       flex-direction: column;
       justify-content: flex-start;
       box-sizing: border-box;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .day-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 100px;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center bottom;
+      opacity: 0.25;
+      pointer-events: none;
     }
 
     .date {
@@ -152,14 +168,19 @@
     }
   }
 
-  function getWeatherIcon(cond) {
+  function getWeatherImage(cond) {
     switch (cond) {
-      case 'Clear': return '☀️';
-      case 'Clouds': return '☁️';
-      case 'Rain': return '🌧️';
-      case 'Snow': return '❄️';
-      default: return '';
-    }
+      case 'Clear':
+        return 'https://cdn-icons-png.flaticon.com/512/869/869869.png'; 
+      case 'Clouds':
+        return 'https://cdn-icons-png.flaticon.com/512/1163/1163624.png'; 
+      case 'Rain':
+        return 'https://cdn-icons-png.flaticon.com/512/1163/1163657.png'; 
+      case 'Snow':
+        return 'https://cdn-icons-png.flaticon.com/512/1163/1163634.png'; 
+      default:
+        return '';
+     }
   }
 
   function showWeek(weekIndex) {
@@ -170,19 +191,28 @@
     const start = weekIndex * 7;
     const end = start + 7;
     const weekData = allWeatherData.slice(start, end);
-    weekData.forEach(day => {
-      const card = document.createElement('div');
-      card.className = 'day-card';
-      const icon = getWeatherIcon(day.cond);
-      card.innerHTML = `
-        <div class="date">${new Date(day.date).toLocaleDateString('ko-KR', { weekday: 'short', month: 'short', day: 'numeric' })}</div>
-        <div class="weather">${icon} ${day.cond}</div>
-        <div class="temp">최고: ${day.maxTemp.toFixed(1)}℃</div>
-        <div class="temp">최저: ${day.minTemp.toFixed(1)}℃</div>
-      `;
-      container.appendChild(card);
+
+  weekData.forEach(day => {
+    const card = document.createElement('div');
+    card.className = 'day-card';
+    const icon = getWeatherIcon(day.cond);
+    const bgImage = getWeatherImage(day.cond);
+    card.style.setProperty('--bg-img', `url('${bgImage}')`);
+    card.innerHTML = `
+      <div class="date">${new Date(day.date).toLocaleDateString('ko-KR', { weekday: 'short', month: 'short', day: 'numeric' })}</div>
+      <div class="weather">${icon} ${day.cond}</div>
+      <div class="temp">최고: ${day.maxTemp.toFixed(1)}℃</div>
+      <div class="temp">최저: ${day.minTemp.toFixed(1)}℃</div>
+    `;
+    card.style.setProperty('--bg-img', `url('${bgImage}')`);
+    card.style.setProperty('--cond', day.cond);
+    card.style.backgroundImage = `linear-gradient(to top, rgba(255,255,255,0.95) 70%, transparent), url('${bgImage}')`;
+    card.style.backgroundPosition = 'center bottom';
+    card.style.backgroundRepeat = 'no-repeat';
+    card.style.backgroundSize = 'contain';
+    container.appendChild(card);
     });
-  }
+  } 
 
   function resetView() {
     history.pushState({}, '', '/');
